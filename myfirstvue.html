@@ -9,42 +9,37 @@
   <body>
 
 <div id="app">
-  <board></board>
+  <board
+    v-bind:squares="squares"
+  ></board>
 </div>
 		
   </body>
   <script type="text/javascript">
 
     Vue.component('square', {
+      props: ['val'],
       template:`
-        <li>asddddf</li>
+        <li>{{ val }}</li>
       `
     });
 
     Vue.component('board', {
+      props: ['squares'],
       template:`
         <ol>
-          <square></square>
+          <square
+            v-for="val in squares"
+            v-bind:val="val"
+          ></square>
         </ol>
       `
     });
-    
-var getRandom = (length) => {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-
 
 var app = new Vue({
   el: '#app',
   data: {
-    message: getRandom(5)
+    squares: ['x','x','x','x','x','x','x','x','x']
   }
 })
 
