@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
     <title>Untitled</title>
     <meta name="description" content="This is an example of a meta description.">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+    <style>
+      .board {
+        padding: 0;
+      }
+      .square {
+        width: 50px;
+        padding: 25px 0;
+        text-align: center;
+        border: 1px solid black;
+        list-style-type: none;
+        float: left;
+      }
+      .square:nth-child(3n+1) {
+        clear: both;
+      }
+    </style>
+
   </head>
   <body>
 
@@ -20,14 +38,14 @@
     Vue.component('square', {
       props: ['val'],
       template:`
-        <li>{{ val }}</li>
+        <li v-html="val" class="square"></li>
       `
     });
 
     Vue.component('board', {
       props: ['squares'],
       template:`
-        <ol>
+        <ol class="board">
           <square
             v-for="val in squares"
             v-bind:val="val"
@@ -39,7 +57,7 @@
 var app = new Vue({
   el: '#app',
   data: {
-    squares: ['x','x','x','x','x','x','x','x','x']
+    squares: ['&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;']
   }
 })
 
