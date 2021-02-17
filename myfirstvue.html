@@ -9,6 +9,10 @@
     <style>
       .board {
         padding: 0;
+        overflow: auto;
+      }
+      .board:after {
+        clear: both;
       }
       .square {
         width: 50px;
@@ -27,67 +31,99 @@
   <body>
 
 <div id="app">
-  <board
-    v-bind:squares="squares"
-  ></board>
+  <board></board>
 </div>
-		
+    
   </body>
   <script type="text/javascript">
 
     Vue.component('square', {
-      props: ['val','tellBoard', 'getCurrentPlayer', 'index'],
+      props: ['value','onClick', 'index'],
       template:`
-        <li v-html="val" class="square" v-on:click="onClick"></li>
-      `,
-      methods: {
-        onClick: function () {
-          this.val = this.getCurrentPlayer();
-          this.tellBoard(this.index);
-        }
-      }
+        <li v-html="value" class="square" v-on:click="onClick(index)"></li>
+      `
     });
 
     Vue.component('board', {
-      props: ['squares'],
       data: () => {
         return {
-          currentPlayer: 'x'
+          players: ['X', 'O'],
+          squares: ['&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;'],
+          currentPlayer: 'X',
+          statusMessage: '',
+          gameHasEnded: false,
         }
       },
       template:`
-        <ol class="board">
-          <square
-            v-for="(val, index) in squares" :key="index"
-            v-bind:val="val"
-            v-bind:index="index"
-            v-bind:tellBoard="squareClicked"
-            v-bind:getCurrentPlayer="getCurrentPlayer"
-          ></square>
-        </ol>
+        <div>
+          <ol class="board">
+            <square
+              v-for="(value, index) in squares" :key="index"
+              v-bind:value="value"
+              v-bind:index="index"
+              v-bind:onClick="squareClicked"
+            ></square>
+          </ol>
+          <p>{{ statusMessage }}</p>
+        </div>
       `,
       methods: {
-        getCurrentPlayer: function () {
-          return this.currentPlayer;
+        squareClicked: function (i) {
+          if (this.gameHasEnded) {
+            return;
+          }
+          this.markSquare(i);
+          this.checkWinCondition();
+          if (!this.gameHasEnded) {
+            this.switchPlayer();
+          }
+          return;
         },
-        squareClicked: function () {
-          this.switchPlayer();
+        markSquare: function (i) {
+          if (this.squares[i] === '&nbsp;') {
+            this.squares.splice(i, 1, this.currentPlayer);
+          }
+          return;
+        },
+        checkWinCondition: function () {
+          if (
+            this.squares[0] === this.currentPlayer && this.squares[1] === this.currentPlayer && this.squares[2] === this.currentPlayer ||
+            this.squares[3] === this.currentPlayer && this.squares[4] === this.currentPlayer && this.squares[5] === this.currentPlayer ||
+            this.squares[6] === this.currentPlayer && this.squares[7] === this.currentPlayer && this.squares[8] === this.currentPlayer ||
+            this.squares[0] === this.currentPlayer && this.squares[3] === this.currentPlayer && this.squares[6] === this.currentPlayer ||
+            this.squares[1] === this.currentPlayer && this.squares[4] === this.currentPlayer && this.squares[7] === this.currentPlayer ||
+            this.squares[2] === this.currentPlayer && this.squares[5] === this.currentPlayer && this.squares[8] === this.currentPlayer ||
+            this.squares[0] === this.currentPlayer && this.squares[4] === this.currentPlayer && this.squares[8] === this.currentPlayer ||
+            this.squares[2] === this.currentPlayer && this.squares[4] === this.currentPlayer && this.squares[6] === this.currentPlayer
+          ) {
+            this.gameHasEnded = true;
+            this.statusMessage = this.currentPlayer + ' has won!';
+          } else if (
+            this.squares[0] !== '&nbsp;' &&
+            this.squares[1] !== '&nbsp;' &&
+            this.squares[2] !== '&nbsp;' &&
+            this.squares[3] !== '&nbsp;' &&
+            this.squares[4] !== '&nbsp;' &&
+            this.squares[5] !== '&nbsp;' &&
+            this.squares[6] !== '&nbsp;' &&
+            this.squares[7] !== '&nbsp;' &&
+            this.squares[8] !== '&nbsp;'
+          ) {
+            this.gameHasEnded = true;
+            this.statusMessage = 'oh no, it\'s a tie!';
+          }
           return;
         },
         switchPlayer: function () {
-          this.currentPlayer = this.currentPlayer === 'x' ? 'o' : 'x';
+          this.currentPlayer = this.currentPlayer === this.players[0] ? this.players[1] : this.players[0];
           return;
         },
       }
     });
 
-var app = new Vue({
-  el: '#app',
-  data: {
-    squares: ['&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;','&nbsp;']
-  }
-})
-
+    var app = new Vue({
+      el: '#app'
+    })
 
   </script>
 </html>
