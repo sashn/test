@@ -36,22 +36,49 @@
   <script type="text/javascript">
 
     Vue.component('square', {
-      props: ['val'],
+      props: ['val','tellBoard', 'getCurrentPlayer', 'index'],
       template:`
-        <li v-html="val" class="square"></li>
-      `
+        <li v-html="val" class="square" v-on:click="onClick"></li>
+      `,
+      methods: {
+        onClick: function () {
+          this.val = this.getCurrentPlayer();
+          this.tellBoard(this.index);
+        }
+      }
     });
 
     Vue.component('board', {
       props: ['squares'],
+      data: () => {
+        return {
+          currentPlayer: 'x'
+        }
+      },
       template:`
         <ol class="board">
           <square
-            v-for="val in squares"
+            v-for="(val, index) in squares" :key="index"
             v-bind:val="val"
+            v-bind:index="index"
+            v-bind:tellBoard="squareClicked"
+            v-bind:getCurrentPlayer="getCurrentPlayer"
           ></square>
         </ol>
-      `
+      `,
+      methods: {
+        getCurrentPlayer: function () {
+          return this.currentPlayer;
+        },
+        squareClicked: function () {
+          this.switchPlayer();
+          return;
+        },
+        switchPlayer: function () {
+          this.currentPlayer = this.currentPlayer === 'x' ? 'o' : 'x';
+          return;
+        },
+      }
     });
 
 var app = new Vue({
